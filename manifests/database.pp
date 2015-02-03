@@ -4,15 +4,15 @@ class ckan::database (
   $ckan_node_id,
 
   # Database names
-  $ckan_db_name          = "ckan_${ckan_node_id}",
-  $datastore_db_name     = "datastore_${ckan_node_id}",
+  $ckan_db_name          = undef,
+  $datastore_db_name     = undef,
 
   # Username and password for the CKAN Database
-  $ckan_db_user          = "ckan_${ckan_node_id}",
+  $ckan_db_user          = undef,
   $ckan_db_password,
 
   # Username and password for the DATASTORE Database
-  $datastore_db_user     = "datastore_${ckan_node_id}",
+  $datastore_db_user     = undef,
   $datastore_db_password,
 
   # Root password for the database server
@@ -25,13 +25,39 @@ class ckan::database (
   $db_encoding           = 'utf-8'
 
 ) {
+
+  # Set some saner defaults based on the node id
+  if $ckan_db_name == undef {
+    $ckan_db_name_real = "ckan_${ckan_node_id}"
+  } else {
+    $ckan_db_name_real = $ckan_db_name
+  }
+
+  if $datastore_db_name == undef {
+    $datastore_db_name_real = "datastore_${ckan_node_id}"
+  } else {
+    $datastore_db_name_real = $datastore_db_name
+  }
+
+  if $ckan_db_user == undef {
+    $ckan_db_user_real = "ckan_${ckan_node_id}"
+  } else {
+    $ckan_db_user_real = $ckan_db_user
+  }
+
+  if $datastore_db_user == undef {
+    $datastore_db_user_real = "datastore_${ckan_node_id}"
+  } else {
+    $datastore_db_user_real = $datastore_db_user
+  }
+
   # Postgresql installation.
   class { '::postgresql::server':
     postgres_password => "${postgres_password}",
     ipv4acls          => [
-      "host ${ckan_db_name} ${ckan_db_user} ${ckan_app_ip}/32 md5",
-      "host ${datastore_db_name} ${ckan_db_user} ${ckan_app_ip}/32 md5",
-      "host ${datastore_db_name} ${datastore_db_user} ${ckan_app_ip}/32 md5",
+      "host ${ckan_db_name_real} ${ckan_db_user_real} ${ckan_app_ip}/32 md5",
+      "host ${datastore_db_name_real} ${ckan_db_user_real} ${ckan_app_ip}/32 md5",
+      "host ${datastore_db_name_real} ${datastore_db_user_real} ${ckan_app_ip}/32 md5",
     ]
   }
 
@@ -39,21 +65,21 @@ class ckan::database (
   ::postgresql::server::db {
 
     # CKAN Database
-    "${ckan_db_name}":
-      user     => "${ckan_db_user}",
+    "${ckan_db_name_real}":
+      user     => "${ckan_db_user_real}",
       encoding => "${db_encoding}",
       password => postgresql_password(
-        "${ckan_db_user}",
+        "${ckan_db_user_real}",
         "${ckan_db_password}"
       );
 
     # Datastore Database
-    "${datastore_db_name}":
-      user     => "${datastore_db_user}",
+    "${datastore_db_name_real}":
+      user     => "${datastore_db_user_real}",
       encoding => "${db_encoding}",
       password => postgresql_password(
-        "${datastore_db_user}",
-        "${datastore_db_password}"
+        "${datastore_db_user_real}",
+        "${datastore_db_password_real}"
       );
   }
 }
