@@ -1,7 +1,7 @@
 # Configures CKAN Database Server
 class ckan::database (
   # Name of the collective CKAN Node (dev/prod/test)
-  $ckan_node_id          = undef,
+  $ckan_node_id,
 
   # Database names
   $ckan_db_name          = "ckan_${ckan_node_id}",
@@ -9,17 +9,17 @@ class ckan::database (
 
   # Username and password for the CKAN Database
   $ckan_db_user          = "ckan_${ckan_node_id}",
-  $ckan_db_password      = undef,
+  $ckan_db_password,
 
   # Username and password for the DATASTORE Database
   $datastore_db_user     = "datastore_${ckan_node_id}",
-  $datastore_db_password = undef,
+  $datastore_db_password,
 
   # Root password for the database server
-  $postgres_password     = undef,
+  $postgres_password,
 
   # IP Address of the CKAN App Server
-  $ckan_app_ip           = undef,
+  $ckan_app_ip,
 
   # Database encoding
   $db_encoding           = 'utf-8'
