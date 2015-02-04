@@ -61,6 +61,8 @@ class ckan::database (
     ]
   }
 
+  contain '::postgresql::server'
+
   # Configure ckan databases
   ::postgresql::server::db {
 
