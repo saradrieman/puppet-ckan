@@ -2,16 +2,38 @@
 #
 # NOTE: This only currently works on UBUNTU.
 class ckan::index (
-  # Name of the collective CKAN Node (dev/prod/test)
-  $ckan_node_id
+  $ckan_node_id = $::ckan::params::ckan_node_id,
+  $ckan_version = $::ckan::params::ckan_version
 ) {
+  
+  # Req packages first
+  $req_ckan_packages = [
+    "python-dev",
+    "postgresql",
+    "libpq-dev",
+    "python-pip",
+    "python-virtualenv",
+    "git-core",
+    "solr-jetty",
+    "openjdk-6-jdk",
+  ]
+  
+  package { $req_ckan_packages:
+    ensure => 'installed'
+  }->
+
+  # I require params to be instantiated first
+  Class['ckan::params'] -> Class['ckan::index']
 
   # Install and configure tomcat
   class { 'tomcat':
     install_from_source => false,
   }->
 
-  package { 'solr-tomcat':
+  package { [
+      'solr-tomcat',
+      'git'
+    ]:
     ensure => 'installed'
   }->
 
@@ -42,6 +64,14 @@ class ckan::index (
       target  => '/etc/solr/solr-tomcat.xml',
       require => File['indexhost_solr_config_directory'];
 
+  }->
+
+  # Download the appropriate version of the solr schema
+  exec { 'download_solr_configuration':
+    command  => "cd /usr/share/solr/conf && wget https://raw.githubusercontent.com/ckan/ckan/ckan-${ckan_version}/ckan/config/solr/schema.xml && chown tomcat.tomcat *.xml",
+    provider => 'shell',
+    creates  => '/usr/share/solr/conf/schema.xml',
+    require  => Package['git'];
   }->
 
   # Actually start the service
