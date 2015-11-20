@@ -8,7 +8,7 @@ class ckan::params (
   $ckan_node_id,
 
   # IP Address of the CKAN App Server
-  $ckan_version          = '2.3.2',
+  $ckan_version,
 
   # Application uuids that need to be generated
   $app_uuid,
