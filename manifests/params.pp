@@ -5,7 +5,7 @@ class ckan::params (
   ###############################
 
   # Name of the collective CKAN Node (dev/prod/test)
-  $ckan_node_id = 'dev',
+  $ckan_node_id,
 
   # IP Address of the CKAN App Server
   $ckan_version          = '2.3.2',
