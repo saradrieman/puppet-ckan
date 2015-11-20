@@ -1,5 +1,5 @@
 # Configures CKAN Database Server
-class ckan::database (
+class ::ckan::database (
   # Name of the collective CKAN Node (dev/prod/test)
   $ckan_node_id          = $::ckan::params::ckan_node_id,
   $ckan_db_name          = $::ckan::params::ckan_db_name_real,
